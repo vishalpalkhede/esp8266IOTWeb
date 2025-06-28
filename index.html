@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ESP8266 Data Dashboard</title>
+    <style>
+        body {font-family: Arial, Helvetica, sans-serif;padding: 20px;}
+        #data {font-size: 1.5em; margin-top: 10px;}
+    </style>
+</head>
+<body>
+    <h1>ESP8266 Senesor Data</h1>
+    <div>
+        <strong>Temperature:</strong><span id="data">Loading ...</span>
+    </div>
+    <button onclick="sendCommand()">Turn LED ON</button>
+    <script>
+        const API_URL = "https://your-render-app.onrender.com/data";
+
+        async function fetchData(){
+            try{
+                const res = await fetch(API_URL);
+                const json = await res.json();
+                document.getElementById('data').innerText = json.temp
+            }catch(err){
+                console.error("Failed to fetch data", err);
+                document.getElementById('data').innerText = "Error";
+            }
+        }
+
+        async function sendCommand(){
+            try{
+                await fetch(API_URL, {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({command: "LED_ON"})
+                });
+                alert("Command sent!");
+            }catch(err){
+                alert("Failed to send command.");
+                console.error(err);
+            }
+        }
+        setInterval(fetchData, 5000);
+        fetchData();
+    </script>
+</body>
+</html>
