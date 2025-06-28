@@ -13,14 +13,18 @@
     <div>
         <strong>Temperature:</strong><span id="data">Loading ...</span>
     </div>
-    <button onclick="sendCommand()">Turn LED ON</button>
+    <input type="text" id="box" placeholder="Enter Command"/>
+    <button onclick="sendCommand()">Send Command</button>
     <script>
-        const API_URL = "https://your-render-app.onrender.com/data";
-
+        
         async function fetchData(){
+            const API_URL = "https://esp8266iot.onrender.com/latest-data";
             try{
+                // console.log("res");
                 const res = await fetch(API_URL);
+                
                 const json = await res.json();
+                console.log(json.temp);
                 document.getElementById('data').innerText = json.temp
             }catch(err){
                 console.error("Failed to fetch data", err);
@@ -29,15 +33,18 @@
         }
 
         async function sendCommand(){
+            const API_URL = "https://esp8266iot.onrender.com/set-command";
             try{
+                const cmd = document.getElementById("box").value;
                 await fetch(API_URL, {
                     method: "POST",
                     headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify({command: "LED_ON"})
+                    body: JSON.stringify({command: cmd})
                 });
                 alert("Command sent!");
             }catch(err){
                 alert("Failed to send command.");
+                console.error("Failed to send Command", err);
                 console.error(err);
             }
         }
